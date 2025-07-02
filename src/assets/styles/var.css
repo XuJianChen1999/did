@@ -1,0 +1,18 @@
+:root {
+  --primary-color: #3751FF;
+  --red-color: #ff5c87;
+  --purple-color: #912eef;
+  --app-bg-color: #120024;
+
+  --base-space: 16px;
+  --base-space-lg: 24px;
+  --base-radius: 10px;
+  --base-white-color: #fff;
+  --base-bg-color: #22252D;
+
+  --van-nav-bar-background: transparent !important;
+  --van-collapse-item-content-background: var(--base-bg-color) !important;
+  --van-cell-background: var(--base-bg-color) !important;
+  --van-popup-background: var(--base-bg-color) !important;
+  --van-primary-color: var(--primary-color) !important;
+}

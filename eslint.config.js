@@ -1,0 +1,118 @@
+import { defineConfig, globalIgnores } from 'eslint/config'
+import globals from 'globals'
+import js from '@eslint/js'
+import pluginVue from 'eslint-plugin-vue'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
+
+export default defineConfig([
+  {
+    name: 'app/files-to-lint',
+    files: ['**/*.{js,mjs,jsx,vue}'],
+  },
+
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        VNode: true,
+        computed: true,
+        createApp: true,
+        customRef: true,
+        defineAsyncComponent: true,
+        defineComponent: true,
+        defineStore: true,
+        effectScope: true,
+        getCurrentInstance: true,
+        getCurrentScope: true,
+        h: true,
+        inject: true,
+        isProxy: true,
+        isReactive: true,
+        isReadonly: true,
+        isRef: true,
+        markRaw: true,
+        nextTick: true,
+        onActivated: true,
+        onAddToFavorites: true,
+        onBackPress: true,
+        onBeforeMount: true,
+        onBeforeUnmount: true,
+        onBeforeUpdate: true,
+        onDeactivated: true,
+        onError: true,
+        onErrorCaptured: true,
+        onMounted: true,
+        onUnmounted: true,
+        onUpdated: true,
+        provide: true,
+        reactive: true,
+        readonly: true,
+        ref: true,
+        resolveComponent: true,
+        shallowReactive: true,
+        shallowReadonly: true,
+        shallowRef: true,
+        toRaw: true,
+        toRef: true,
+        toRefs: true,
+        toValue: true,
+        triggerRef: true,
+        unref: true,
+        useAttrs: true,
+        useCssModule: true,
+        useCssVars: true,
+        useSlots: true,
+        useRoute: true,
+        useRouter: true,
+        watch: true,
+        watchEffect: true,
+        watchPostEffect: true,
+        watchSyncEffect: true,
+        Component: true,
+        ComponentPublicInstance: true,
+        ComputedRef: true,
+        DirectiveBinding: true,
+        EffectScope: true,
+        ExtractDefaultPropTypes: true,
+        ExtractPropTypes: true,
+        ExtractPublicPropTypes: true,
+        InjectionKey: true,
+        MaybeRef: true,
+        MaybeRefOrGetter: true,
+        PropType: true,
+        Ref: true,
+        WritableComputedRef: true,
+        onBeforeRouteLeave: true,
+        onBeforeRouteUpdate: true,
+        onRenderTracked: true,
+        onRenderTriggered: true,
+        onScopeDispose: true,
+        onServerPrefetch: true,
+        onWatcherCleanup: true,
+        useId: true,
+        useLink: true,
+        useModel: true,
+        useTemplateRef: true,
+      },
+    },
+  },
+
+  js.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+
+  {
+    rules: {
+      'vue/multi-word-component-names': [
+        'error',
+        {
+          ignores: ['index', 'default', 'error', 'mine'], // 允许这些单字名称
+        },
+      ],
+    },
+  },
+
+  skipFormatting,
+])

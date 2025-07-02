@@ -1,0 +1,79 @@
+/* 淡入淡出效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+  will-change: opacity;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 向右滑动进入效果 */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s ease-in;
+  will-change: transform, opacity;
+}
+
+.slide-fade-enter-from {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+/* 向左滑动进入效果 */
+.slide-fade-left-enter-active {
+  transition: all 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+.slide-fade-left-leave-active {
+  transition: all 0.3s ease-in;
+  will-change: transform, opacity;
+}
+
+.slide-fade-left-enter-from {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.slide-fade-left-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+/* tabbar隐藏、出现过渡动画 */
+.tabbar-slide-enter-active,
+.tabbar-slide-leave-active {
+  transition: transform 0.3s cubic-bezier(.55, 0, .1, 1), opacity 0.3s;
+}
+
+.tabbar-slide-enter-from {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.tabbar-slide-enter-to {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.tabbar-slide-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.tabbar-slide-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}

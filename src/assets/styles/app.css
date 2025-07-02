@@ -1,0 +1,29 @@
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  background-color: var(--app-bg-color);
+  overflow-x: hidden;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.van-nav-bar .van-icon {
+  color: var(--base-white-color) !important;
+}
+
+.van-nav-bar__title {
+  color: var(--base-white-color) !important;
+}
+
+.van-popup {
+  background-color: var(--base-bg-color);
+}
+
+.van-popup--bottom.van-popup--round {
+  border-radius: var(--base-radius) var(--base-radius) 0 0;
+}
