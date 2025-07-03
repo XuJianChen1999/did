@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 15:52:24
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-01 17:42:10
+ * @LastEditTime: 2025-07-03 10:56:01
  * @Description: 靓号列表
 -->
 <template>
@@ -15,13 +15,12 @@
     >
       <div class="number-list-wrapper">
         <div v-for="item in numberList" :key="item.id" class="number-list-item flex">
-          <img src="@/assets/images/goods-pic.png" />
+          <img src="" />
           <div class="number-list-item-info flex">
             <div class="number-list-item-info-title">
               <span class="name"># {{ item.Id }}</span>
               <div class="flex price">
                 <div class="flex">
-                  <trading-eth />
                   <span>{{ item.UsdcPrice }}</span>
                 </div>
                 <van-tag
@@ -59,7 +58,6 @@ import { useWallet } from '@/hooks/wallet/useWallet'
 import { useWalletPayment } from '@/hooks/wallet/useWalletPayment'
 import showLoading from '@/app/loading'
 import ConnectionWalletModal from '@/components/wallet-connection-modal'
-import TradingEth from '@/assets/svg/trading-center-eth'
 
 const { publicKey } = useWallet()
 const { sendPayment } = useWalletPayment()

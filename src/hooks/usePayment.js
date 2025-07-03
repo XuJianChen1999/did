@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 10:37:33
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-01 15:35:47
+ * @LastEditTime: 2025-07-03 10:13:55
  * @Description: 统一支付
  */
 import { showToast } from 'vant'
@@ -59,8 +59,7 @@ export function usePayment() {
     console.log(publicKey.value)
     if (!publicKey.value) {
       emitter.emit(SHOW_WALLET_CONNECTION)
-      console.warn('钱包未连接')
-      throw new Error('钱包未连接')
+      return console.warn('钱包未连接')
     }
   }
 

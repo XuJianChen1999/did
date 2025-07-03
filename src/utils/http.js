@@ -2,18 +2,18 @@
  * @Author: Xujianchen
  * @Date: 2025-06-07 16:29:27
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-02 19:05:01
+ * @LastEditTime: 2025-07-03 09:58:08
  * @Description: http请求封装
  */
 import axios from 'axios'
 import { showFailToast, showLoadingToast, showToast } from 'vant'
-import { baseURL, STORAGE_TOKEN, STORAGE_WALLET_TOKEN } from '@/const'
+import { STORAGE_TOKEN, STORAGE_WALLET_TOKEN } from '@/const'
 import { getStorage, removeItem } from './storage'
 
 axios.defaults.withCredentials = true
 
 const http = axios.create({
-  baseURL: import.meta.env.MODE === 'development' ? '/api' : baseURL,
+  baseURL: '',
   timeout: 90000,
   method: 'get',
 })

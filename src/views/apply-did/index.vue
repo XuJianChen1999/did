@@ -159,6 +159,7 @@ watch(isApply, async (newVal) => {
 })
 
 async function handleConnected() {
+  console.log(111)
   const inst = await showLoading('正在抽取...')
   try {
     // await pay(PaymentMap.BUY_VIP)

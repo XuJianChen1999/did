@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-24 09:51:40
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-01 14:45:52
+ * @LastEditTime: 2025-07-03 09:55:49
  * @Description: 用户相关接口
  */
 import http from '@/utils/http'
@@ -12,7 +12,7 @@ export function walletLogin(data) {
   return http({
     method: 'post',
     data,
-    url: '/user/loginByAddress',
+    url: '/api/user/loginByAddress',
   })
 }
 
@@ -20,7 +20,7 @@ export function walletLogin(data) {
 export function queryIdCard(id) {
   return http({
     method: 'post',
-    url: '/dapp.user/queryIdCard',
+    url: '/api/dapp.user/queryIdCard',
     data: {
       id,
     },
@@ -31,7 +31,7 @@ export function queryIdCard(id) {
 export function checkVipStatus(address) {
   return http({
     method: 'post',
-    url: '/dapp.user/getVipInfo',
+    url: '/api/dapp.user/getVipInfo',
     data: {
       address,
     },
@@ -42,7 +42,7 @@ export function checkVipStatus(address) {
 export function loginByAddress(address) {
   return http({
     method: 'post',
-    url: '/user/loginByAddress',
+    url: '/api/user/loginByAddress',
     data: {
       address,
     },

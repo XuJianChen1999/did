@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-09 15:46:55
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-02 16:44:29
+ * @LastEditTime: 2025-07-03 10:12:02
  * @Description: 钱包连接弹窗
 -->
 <template>
@@ -10,7 +10,7 @@
     <div class="wallet-connection">
       <div class="wallet-connection-title flex">
         <span></span>
-        <span>{{ $t('buyNow.connectWallet.connectWalletTitle') }}</span>
+        <span>连接钱包</span>
         <van-icon name="cross" />
       </div>
       <div class="wallet-connection-list">
