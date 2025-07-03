@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-09 15:46:55
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 10:12:02
+ * @LastEditTime: 2025-07-03 11:12:07
  * @Description: 钱包连接弹窗
 -->
 <template>
@@ -10,7 +10,7 @@
     <div class="wallet-connection">
       <div class="wallet-connection-title flex">
         <span></span>
-        <span>连接钱包</span>
+        <span>请先连接钱包</span>
         <van-icon name="cross" />
       </div>
       <div class="wallet-connection-list">
@@ -84,7 +84,7 @@ function close() {
   padding: var(--base-space-lg);
   border-radius: 15px;
   border: 1px solid #58667e66;
-  background-color: var(--app-bg-color);
+  background-color: #22252d;
 
   &-title {
     justify-content: space-between;

@@ -14,7 +14,6 @@
     </div>
 
     <div class="apply-did-success" v-else>
-      <!-- <img src="@/assets/img/Successful@2x.png" alt="" /> -->
       <div class="confetti-container">
         <canvas
           id="confetti-canvas"
@@ -49,59 +48,41 @@
         </div>
       </div>
 
-      <div class="footer-btn">
+      <!-- <div class="footer-btn">
         <div class="btn-apply">返回资产</div>
-      </div>
+      </div> -->
     </div>
-
-    <van-field
-      v-model="address"
-      placeholder="输入钱包地址获取token, 临时测试用"
-      style="
-        background-color: #fff;
-        border: 1px solid var(--primary-color);
-        color: var(--primary-color);
-      "
-    ></van-field>
 
     <wallet-connection-modal
       v-model="isShowSelectWallet"
       @select="handleConnected"
-      @success="showToast('链接成功')"
+      @success="showToast('连接成功')"
     />
   </div>
 </template>
 
 <script setup>
-import { showToast, showConfirmDialog, showLoadingToast } from 'vant'
+import { showToast, showLoadingToast } from 'vant'
 import { useWallet } from '@/hooks/wallet/useWallet'
-import { useWalletPayment } from '@/hooks/wallet/useWalletPayment'
-import { useSendTransaction } from '@/hooks/useSendTransaction'
 import { usePayment } from '@/hooks/usePayment'
-import { drawBlindBox } from '@/api/blind-box'
-import { buyVip } from '@/api/order'
-import { queryIdCard, loginByAddress } from '@/api/user'
+import { loginByAddress } from '@/api/user'
 import { PaymentMap } from '@/const/payment'
 import { STORAGE_WALLET_TOKEN } from '@/const'
-import { SHOW_WALLET_CONNECTION } from '@/const/mitt'
 import { getQueryParams } from '@/utils/url'
-import { setStorage, getStorage } from '@/utils/storage'
+import { setStorage } from '@/utils/storage'
 import confetti from 'canvas-confetti'
 import copyToClipboard from '@/utils/clipboard'
 import showLoading from '@/app/loading'
-import emitter from '@/app/event-bus'
 import WalletConnectionModal from '@/components/wallet-connection-modal'
 import CopySvg from '@/assets/svg/apply-did-copy'
-import { publicKey } from '@coral-xyz/anchor/dist/cjs/utils'
 
 const router = useRouter()
 const { pay } = usePayment()
-const { sendWalletTransaction } = useSendTransaction()
+const { publicKey } = useWallet()
 
 const isShowSelectWallet = ref(false)
 const isApply = ref(true)
 const confettiBg = ref('')
-const address = ref(getStorage('TEST_ADDR') || '')
 const drawData = ref({})
 
 onMounted(async () => {
@@ -116,12 +97,9 @@ onMounted(async () => {
       ins.close()
     } catch (error) {
       ins.close()
+      console.log('error---', error)
     }
   }
-
-  // emitter.on(SHOW_WALLET_CONNECTION, () => {
-  //   isShowSelectWallet.value = true
-  // })
 })
 
 watch(isApply, async (newVal) => {
@@ -159,53 +137,33 @@ watch(isApply, async (newVal) => {
 })
 
 async function handleConnected() {
-  console.log(111)
-  const inst = await showLoading('正在抽取...')
-  try {
-    // await pay(PaymentMap.BUY_VIP)
-    const res = await pay(PaymentMap.DRAW_NUMBER)
-    await inst.close()
-    showToast(`恭喜您获取DID靓号：${res.data.number}`)
-    isApply.value = true
-  } catch (error) {
-    console.error(error)
-    // showToast('用户取消交易或交易失败')
-    inst.close()
-  }
+  console.log(publicKey.value)
+  await drawBox()
 }
 
 async function handleDraw() {
-  if (!address.value) {
-    return showToast('请输入钱包地址')
-  }
-  showLoadingToast('获取token中...')
-  const res = await loginByAddress(address.value)
-  console.log(res)
-  setStorage('TEST_ADDR', address.value)
-  setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
   if (!publicKey.value) {
-    const res = await showConfirmDialog({
-      title: '温馨提示',
-      message: '请先连接钱包才能抽取靓号',
-      confirmButtonText: '连接钱包',
-    })
-    if (res === 'confirm') {
-      isShowSelectWallet.value = true
-    }
+    isShowSelectWallet.value = true
     return
   }
+  showLoadingToast('正在处理')
+  await drawBox()
+}
 
-  const ins = await showLoading('正在抽取...')
+async function drawBox() {
+  const res = await loginByAddress(publicKey.value.toBase58())
+  console.log(res)
+  setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
+
+  const lodIns = await showLoading('正在抽取...')
   try {
-    // await pay(PaymentMap.BUY_VIP)
     const res = await pay(PaymentMap.DRAW_NUMBER)
-    await ins.close()
+    await lodIns.close()
     showToast(`恭喜您获取DID靓号：${res.data.number}`)
     isApply.value = true
   } catch (error) {
     console.error(error)
-    // showToast('用户取消交易或交易失败')
-    ins.close()
+    lodIns.close()
   }
 }
 
