@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-24 09:51:40
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 09:55:49
+ * @LastEditTime: 2025-07-04 12:07:52
  * @Description: 用户相关接口
  */
 import http from '@/utils/http'
@@ -46,5 +46,13 @@ export function loginByAddress(address) {
     data: {
       address,
     },
+  })
+}
+
+// 获取用户的did列表
+export function getUserDidList() {
+  return http({
+    url: '/api/social.number/getUserNumberList',
+    method: 'post',
   })
 }

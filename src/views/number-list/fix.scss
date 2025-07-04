@@ -1,15 +1,18 @@
+:deep(.van-collapse-item__title) {
+  border-bottom: 1px solid #E3EBF1 !important;
+}
+
 /* 设置第一个 item 的上圆角 */
-.van-collapse-item:first-child .van-collapse-item__title {
+:deep(.van-collapse-item:first-child .van-collapse-item__title) {
   border-top-left-radius: 8px !important;
   border-top-right-radius: 8px !important;
 }
 
 /* 设置最后一个 item 的下圆角（收起状态） */
-.van-collapse-item:last-child .van-collapse-item__title {
+:deep(.van-collapse-item:last-child .van-collapse-item__title) {
   border-bottom-left-radius: 8px !important;
   border-bottom-right-radius: 8px !important;
-  border-bottom: none;
-
+  border-bottom: none !important;
 }
 
 /* 设置最后一个 item 展开时的下圆角 */
@@ -18,28 +21,44 @@
   border-bottom-right-radius: 8px !important;
 }
 
-.van-collapse-item:last-child {
+:deep(.van-collapse-item:last-child) {
   border-bottom: none;
 }
 
-.van-collapse-item:first-child {
-  .van-cell {
-    border-top-left-radius: 8px !important;
-  border-top-right-radius: 8px !important;
+:deep(.van-collapse-item__content) {
+  background-color: #f5f6f8;
+}
+:deep(.van-cell) {
+  background-color: #f5f6f8 !important;
+  &::after {
+    border-bottom: 1px solid #E3EBF1;
   }
 }
 
-:deep(.van-collapse-item__title) {
-  border-bottom: 1px solid #E3EBF1 !important;
+:deep(.van-collapse) {
+  background-color: #f5f6f8 !important;
+  width: calc(100% - 30px);
+  border-radius: var(--base-radius);
+  border: none;
+  margin-left: 34px;
+  border: 1px solid #E3EBF1;
 }
 
-:deep(.van-collapse-item__title .van-cell__right-icon) {
-  // color: var(--base-white-color); /* 收起状态颜色 */
-  // transition:
-  //   transform 0.3s,
-  //   color 0.3s; /* 保留旋转动画，添加颜色过渡 */
+:deep(.van-nav-bar__content) {
+  height: 72px !important;
+  line-height: 72px !important;
+  border-bottom: 1px solid #e3ebf1 !important;
 }
 
-:deep(.van-collapse-item__title--expanded .van-cell__right-icon) {
-  // color: var(--primary-color) !important;
+:deep(.van-collapse-item__wrapper) {
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  .van-collapse-item__content:last-child {
+    border-bottom-left-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+}
+
+:deep(.van-nav-bar__title) {
+  color: #212121 !important;
 }

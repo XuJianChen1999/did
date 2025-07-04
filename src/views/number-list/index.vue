@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 15:52:24
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 18:05:14
+ * @LastEditTime: 2025-07-04 13:04:22
  * @Description: 靓号列表
 -->
 <template>
@@ -20,21 +20,39 @@
           <span>靓号列表（18）</span>
           <img src="@/assets/svg/add-icon.svg" alt="" />
         </div>
-        <div class="number-list-box">
-          <div class="number-list-item flex">
-            <van-checkbox style="margin-right: 12px"></van-checkbox>
-            <van-collapse v-model="activeNames" :border="false">
-              <van-collapse-item title="标题1" name="1">
-                代码是写出来给人看的，附带能在机器上运行。
-              </van-collapse-item>
-              <van-collapse-item title="标题2" name="2">
-                技术无非就是那些开发它的人的共同灵魂。
-              </van-collapse-item>
-              <van-collapse-item title="标题3" name="3">
-                在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。
+        <div v-if="!numberList.length" class="number-list-box">
+          <div v-for="(item, index) in 3" :key="index" class="number-list-item flex">
+            <van-checkbox
+              class="number-list-item-checkbox"
+              :model-value="index === currentIndex"
+              style="margin-right: 12px"
+              @click="handleSelect(index)"
+            />
+            <van-collapse
+              v-model="activeNames"
+              accordion
+              :border="false"
+              :style="{
+                border: `1px solid ${currentIndex === index ? 'var(--primary-color)' : '#E3EBF1'}`,
+              }"
+            >
+              <van-collapse-item :name="'item.Id' + index">
+                <template #title>
+                  <span :style="{ color: currentIndex === index ? 'var(--primary-color)' : '' }"
+                    >{{ 'item.Id' }}--{{ index }}</span
+                  >
+                </template>
+                <div class="no-number flex">
+                  <span>暂未绑定钱包</span>
+                  <div>去绑定</div>
+                </div>
               </van-collapse-item>
             </van-collapse>
           </div>
+        </div>
+        <div v-else class="number-empty flex">
+          <span>暂无靓号</span>
+          <div>去抽取</div>
         </div>
       </div>
     </van-pull-refresh>
@@ -44,6 +62,7 @@
 
 <script setup>
 import { getNumberList } from '@/api/order'
+import { getUserDidList } from '@/api/user'
 import { useWallet } from '@/hooks/wallet/useWallet'
 import { useWalletPayment } from '@/hooks/wallet/useWalletPayment'
 import showLoading from '@/app/loading'
@@ -56,9 +75,13 @@ const refreshing = ref(false)
 const isShowConnectionWallet = ref(false)
 const currentItem = ref({})
 const numberList = ref([])
-const activeNames = ref(['1'])
+const activeNames = ref('1')
+const currentIndex = ref(null)
 
-// onMounted(() => getAllNumberList())
+onMounted(async () => {
+  // const res = await getUserDidList()
+  // console.log(res)
+})
 
 function buyNumber(item) {
   if (!item.IsOnSell) return
@@ -69,6 +92,10 @@ function buyNumber(item) {
   }
 
   payNumber()
+}
+
+function handleSelect(index) {
+  currentIndex.value = index
 }
 
 async function payNumber() {
@@ -84,9 +111,11 @@ async function getAllNumberList() {
   }
   try {
     const res = await getNumberList()
+    console.log(res.data.id_card_list)
     numberList.value = res.data.id_card_list
     ins.close()
   } catch (error) {
+    console.error(error)
     ins.close()
   }
 }
@@ -99,36 +128,7 @@ function refresh() {
 
 <style scoped lang="scss">
 @use './fix.scss';
-:deep(.van-nav-bar__content) {
-  height: 72px !important;
-  line-height: 72px !important;
-  border-bottom: 1px solid #e3ebf1 !important;
-}
-:deep(.van-nav-bar__title) {
-  color: #212121 !important;
-}
-:deep(.van-collapse) {
-  background-color: #f5f6f8 !important;
-  width: calc(100% - 30px);
-  border-radius: var(--base-radius);
-  border: none;
-  // .van-collapse-item {
-  //   border-bottom: 1px solid #e3ebf1;
-  //   &:last-child {
-  //     border-bottom: none;
-  //     border-radius: 0 0 var(--base-space) var(--base-space);
-  //   }
-  //   &:first-child {
-  //     border-radius: var(--base-space) var(--base-space) 0 0;
-  //   }
-  // }
-}
-:deep(.van-collapse-item__content) {
-  background-color: #f5f6f8;
-}
-:deep(.van-cell) {
-  background-color: #f5f6f8 !important;
-}
+
 .van-pull-refresh {
   height: 100%;
   overflow-y: scroll;
@@ -147,8 +147,58 @@ function refresh() {
       margin: 14px 0;
     }
     &-item {
+      position: relative;
       justify-content: space-between;
+      margin-bottom: 12px;
+      &-checkbox {
+        position: absolute;
+        top: 18px;
+      }
+      .no-number {
+        justify-content: space-between;
+        span {
+          color: #6d7385;
+          font-size: 12px;
+        }
+        div {
+          width: 56px;
+          height: 24px;
+          text-align: center;
+          line-height: 24px;
+          color: #22252d;
+          font-size: 12px;
+          border-radius: 30px;
+          border: 1px solid #e3ebf1;
+        }
+      }
     }
   }
+
+  &-empty {
+    justify-content: space-between;
+    height: 56px;
+    line-height: 56px;
+    padding: 0 12px;
+    background-color: #f5f6f8;
+    border-radius: var(--base-radius);
+    span {
+      color: #6d7385;
+      font-size: 12px;
+    }
+    div {
+      width: 56px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      border-radius: 30px;
+      border: 1px solid #e3ebf1;
+      background-color: var(--primary-color);
+      color: var(--base-white-color);
+      font-size: 12px;
+    }
+  }
+}
+.active {
+  color: var(--primary-color);
 }
 </style>

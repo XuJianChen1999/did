@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-09 15:46:55
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-04 10:17:22
+ * @LastEditTime: 2025-07-04 11:49:41
  * @Description: 钱包连接弹窗
 -->
 <template>
@@ -39,7 +39,7 @@ const modelValue = defineModel({ type: Boolean, default: false })
 const props = defineProps({
   featured: { type: Number, default: 3 },
 })
-const emits = defineEmits(['close', 'select'])
+const emits = defineEmits(['close', 'select', 'select-coin-nexus'])
 
 const { wallets, publicKey, select: selectWallet } = useWallet()
 
@@ -81,10 +81,12 @@ async function select(item) {
   console.log(item.adapter.name)
   if (item.adapter.name === 'Coin Nexus') {
     window?.FlutterChannel?.postMessage('connect')
-    window.receivePayMessage = function (message) {
+    window.receiveConnectMessage = function (message) {
       showToast('接受到了来自Coin Nexus的信息')
-      console.log(message)
+      console.log('接受到了来自Coin Nexus的信息--', message)
+      emits('select-coin-nexus', message)
     }
+
     close()
   } else {
     await selectWallet(item.adapter.name)
