@@ -2,52 +2,42 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 15:52:24
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 10:56:01
+ * @LastEditTime: 2025-07-03 18:05:14
  * @Description: 靓号列表
 -->
 <template>
-  <div class="number-list">
+  <div class="number">
+    <van-nav-bar title="靓号列表" fixed left-arrow placeholder :border="false" />
+
     <van-pull-refresh
       v-model="refreshing"
       loading-text="正在刷新"
       animation-duration="500"
       @refresh="refresh"
     >
-      <div class="number-list-wrapper">
-        <div v-for="item in numberList" :key="item.id" class="number-list-item flex">
-          <img src="" />
-          <div class="number-list-item-info flex">
-            <div class="number-list-item-info-title">
-              <span class="name"># {{ item.Id }}</span>
-              <div class="flex price">
-                <div class="flex">
-                  <span>{{ item.UsdcPrice }}</span>
-                </div>
-                <van-tag
-                  v-if="item.IsOnSell"
-                  color="#3751FF"
-                  style="margin-left: var(--base-space)"
-                >
-                  出售中
-                </van-tag>
-              </div>
-            </div>
-            <div
-              :style="{
-                background: item.IsOnSell
-                  ? 'linear-gradient(90deg, var(--primary-color) 0%, var(--purple-color) 100%)'
-                  : '#969799',
-              }"
-              class="number-list-item-info-btn flex"
-              @click="buyNumber(item)"
-            >
-              {{ item.IsOnSell ? '购买' : '已出售' }}
-            </div>
+      <div class="number-list">
+        <div class="number-list-header flex">
+          <span>靓号列表（18）</span>
+          <img src="@/assets/svg/add-icon.svg" alt="" />
+        </div>
+        <div class="number-list-box">
+          <div class="number-list-item flex">
+            <van-checkbox style="margin-right: 12px"></van-checkbox>
+            <van-collapse v-model="activeNames" :border="false">
+              <van-collapse-item title="标题1" name="1">
+                代码是写出来给人看的，附带能在机器上运行。
+              </van-collapse-item>
+              <van-collapse-item title="标题2" name="2">
+                技术无非就是那些开发它的人的共同灵魂。
+              </van-collapse-item>
+              <van-collapse-item title="标题3" name="3">
+                在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。
+              </van-collapse-item>
+            </van-collapse>
           </div>
         </div>
       </div>
     </van-pull-refresh>
-
     <connection-wallet-modal v-model="isShowConnectionWallet" @click="payNumber" />
   </div>
 </template>
@@ -66,8 +56,9 @@ const refreshing = ref(false)
 const isShowConnectionWallet = ref(false)
 const currentItem = ref({})
 const numberList = ref([])
+const activeNames = ref(['1'])
 
-onMounted(() => getAllNumberList())
+// onMounted(() => getAllNumberList())
 
 function buyNumber(item) {
   if (!item.IsOnSell) return
@@ -107,70 +98,57 @@ function refresh() {
 </script>
 
 <style scoped lang="scss">
+@use './fix.scss';
+:deep(.van-nav-bar__content) {
+  height: 72px !important;
+  line-height: 72px !important;
+  border-bottom: 1px solid #e3ebf1 !important;
+}
+:deep(.van-nav-bar__title) {
+  color: #212121 !important;
+}
+:deep(.van-collapse) {
+  background-color: #f5f6f8 !important;
+  width: calc(100% - 30px);
+  border-radius: var(--base-radius);
+  border: none;
+  // .van-collapse-item {
+  //   border-bottom: 1px solid #e3ebf1;
+  //   &:last-child {
+  //     border-bottom: none;
+  //     border-radius: 0 0 var(--base-space) var(--base-space);
+  //   }
+  //   &:first-child {
+  //     border-radius: var(--base-space) var(--base-space) 0 0;
+  //   }
+  // }
+}
+:deep(.van-collapse-item__content) {
+  background-color: #f5f6f8;
+}
+:deep(.van-cell) {
+  background-color: #f5f6f8 !important;
+}
 .van-pull-refresh {
   height: 100%;
   overflow-y: scroll;
 }
 
 .number {
-  margin-top: var(--base-space);
-  padding: var(--base-space);
+  padding: 0 var(--base-space);
 
   // 列表
   &-list {
-    margin: var(--base-space);
-    height: 90vh;
-    overflow-y: scroll;
-  }
-  &-list-wrapper {
-    height: 430px;
-    margin-bottom: var(--base-space);
-    // overflow: hidden;
-  }
-  &-list-item {
-    padding: var(--base-space) 0;
-    border-bottom: 1px solid #35383f;
-    &:last-child {
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-    &:first-child {
-      padding-top: 0;
-    }
-    img {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      flex-shrink: 0;
-      margin-right: 12px;
-    }
-  }
-  &-list-item-info {
-    width: 100%;
-    justify-content: space-between;
-  }
-  &-list-item-info-title {
-    display: flex;
-    flex-direction: column;
-    color: var(--base-white-color);
-    font-size: 16px;
-    margin-bottom: 6px;
-    .name {
-      margin-bottom: 10px;
-      margin-top: 5px;
-    }
-    .price {
+    &-header {
       justify-content: space-between;
-      width: 110px;
+      color: #22252d;
+      font-weight: 500;
+      font-size: 14px;
+      margin: 14px 0;
     }
-  }
-  &-list-item-info-btn {
-    padding: 7.5px var(--base-space);
-    border-radius: var(--base-radius);
-    font-size: 14px;
-    color: var(--base-white-color);
-    border-radius: 10px;
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--purple-color) 100%);
+    &-item {
+      justify-content: space-between;
+    }
   }
 }
 </style>

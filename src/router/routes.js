@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-03 15:35:24
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-02 21:21:15
+ * @LastEditTime: 2025-07-03 16:33:11
  * @Description: 路由配置
  */
 export default [
@@ -18,7 +18,7 @@ export default [
     name: 'apply-did',
     component: () => import('@/views/apply-did/index.vue'),
     meta: {
-      title: '抽取DID',
+      title: 'DID商城',
       classLevel: 2,
     },
   },

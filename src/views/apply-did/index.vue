@@ -4,12 +4,11 @@
     <div class="apply-did" v-if="isApply">
       <div class="apply-did-header">
         <div class="apply-did-header-title">抽取DID靓号</div>
-        <div class="apply-did-header-desc">靓号为6-9位的数字组合，每个用户可申请一个随机靓号</div>
+        <div class="apply-did-header-desc">靓号为6-9位的数字组合，每个用户可抽取多个随机靓号</div>
       </div>
       <img src="@/assets/images/Onboarding_01_1@2x.png" alt="" />
       <div class="footer-btn">
         <div class="btn-apply" @click="handleDraw">抽取</div>
-        <div class="btn-cancel" @click="cancel">取消</div>
       </div>
     </div>
 
@@ -41,7 +40,7 @@
       </div>
 
       <div class="apply-success-content">
-        <div class="success-centent">{{ drawData.number }}</div>
+        <div class="success-content">{{ drawData.number }}</div>
         <div class="success-copy" @click="copyToClipboard(drawData.number)">
           <copy-svg />
           复制靓号
@@ -76,7 +75,6 @@ import showLoading from '@/app/loading'
 import WalletConnectionModal from '@/components/wallet-connection-modal'
 import CopySvg from '@/assets/svg/apply-did-copy'
 
-const router = useRouter()
 const { pay } = usePayment()
 const { publicKey } = useWallet()
 
@@ -88,6 +86,9 @@ const drawData = ref({})
 onMounted(async () => {
   const params = getQueryParams()
   console.log('getQueryParams---', params)
+  if (!publicKey.value) {
+    showToast('钱包未连接')
+  }
   if (params?.address) {
     const ins = showLoading('钱包登录中')
     try {
@@ -147,10 +148,11 @@ async function handleDraw() {
     return
   }
   showLoadingToast('正在处理')
-  await drawBox()
+  await drawBox(publicKey.value)
 }
 
 async function drawBox() {
+  console.log('publicKey.value.toBase58()', publicKey.value.toBase58())
   const res = await loginByAddress(publicKey.value.toBase58())
   console.log(res)
   setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
@@ -165,10 +167,6 @@ async function drawBox() {
     console.error(error)
     lodIns.close()
   }
-}
-
-function cancel() {
-  router.go(-1)
 }
 </script>
 
@@ -218,7 +216,8 @@ function cancel() {
 
   .footer-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + constant(safe-area-inset-bottom));
+    bottom: calc(20px + env(safe-area-inset-bottom));
     .btn-apply,
     .btn-cancel {
       width: 343px;
@@ -227,7 +226,6 @@ function cancel() {
       background: linear-gradient(90deg, #3751ff 0%, #912eef 100%);
       text-align: center;
       line-height: 48px;
-      // font-weight: 500;
       font-size: 16px;
       color: #ffffff;
     }
@@ -285,7 +283,7 @@ function cancel() {
   box-sizing: border-box;
   background: #3751ff14;
   display: flex;
-  .success-centent {
+  .success-content {
     font-weight: 700;
     width: calc(390px / 2);
     border-right: 1px solid #3751ff;
@@ -308,9 +306,3 @@ function cancel() {
   }
 }
 </style>
-
-<!-- <style>
-#app {
-  background-color: #fff !important;
-}
-</style> -->

@@ -2,20 +2,20 @@
  * @Author: Xujianchen
  * @Date: 2025-06-09 15:46:55
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 11:12:07
+ * @LastEditTime: 2025-07-04 10:17:22
  * @Description: 钱包连接弹窗
 -->
 <template>
-  <van-overlay :show="modelValue" @click="close">
+  <popup :show="modelValue" :close-on-click-overlay="false" round @close="close">
     <div class="wallet-connection">
       <div class="wallet-connection-title flex">
         <span></span>
-        <span>请先连接钱包</span>
+        <span>连接钱包</span>
         <van-icon name="cross" />
       </div>
       <div class="wallet-connection-list">
         <div
-          v-for="item in walletsList"
+          v-for="item in renderWalletList"
           :key="item.adapter.name"
           class="wallet-connection-list-item flex"
           @click="select(item)"
@@ -25,12 +25,15 @@
         </div>
       </div>
     </div>
-  </van-overlay>
+  </popup>
 </template>
 
 <script setup>
 import { WalletReadyState } from '@solana/wallet-adapter-base'
+import { showToast } from 'vant'
 import { useWallet } from '@/hooks/wallet/useWallet'
+import walletLogo from '@/assets/images/wallet-logo.jpg'
+import popup from '@/components/popup'
 
 const modelValue = defineModel({ type: Boolean, default: false })
 const props = defineProps({
@@ -46,7 +49,7 @@ const orderedWallets = computed(() => {
   const installed = []
   const notDetected = []
   const loadable = []
-
+  console.log(wallets.value)
   wallets.value.forEach((wallet) => {
     if (wallet.readyState === WalletReadyState.NotDetected) {
       notDetected.push(wallet)
@@ -61,11 +64,33 @@ const orderedWallets = computed(() => {
 })
 const featuredWallets = computed(() => orderedWallets.value.slice(0, props.featured))
 const walletsList = computed(() => (expandedWallets.value ? wallets.value : featuredWallets.value))
+const renderWalletList = computed(() => {
+  const tmp = walletsList.value.filter((item) => item.adapter.name !== 'Phantom')
+  return [
+    ...tmp,
+    {
+      adapter: {
+        name: 'Coin Nexus',
+        icon: walletLogo,
+      },
+    },
+  ]
+})
 
 async function select(item) {
-  await selectWallet(item.adapter.name)
-  emits('select', { ...item, publicKey: publicKey.value })
-  close()
+  console.log(item.adapter.name)
+  if (item.adapter.name === 'Coin Nexus') {
+    window?.FlutterChannel?.postMessage('connect')
+    window.receivePayMessage = function (message) {
+      showToast('接受到了来自Coin Nexus的信息')
+      console.log(message)
+    }
+    close()
+  } else {
+    await selectWallet(item.adapter.name)
+    emits('select', { ...item, publicKey: publicKey.value })
+    close()
+  }
 }
 
 function close() {
@@ -76,15 +101,11 @@ function close() {
 
 <style scoped lang="scss">
 .wallet-connection {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(100% - 120px);
+  width: calc(100vw - 120px);
   padding: var(--base-space-lg);
   border-radius: 15px;
   border: 1px solid #58667e66;
-  background-color: #22252d;
+  background-color: var(--app-bg-color);
 
   &-title {
     justify-content: space-between;

@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 10:37:33
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-03 10:13:55
+ * @LastEditTime: 2025-07-03 18:22:41
  * @Description: 统一支付
  */
 import { showToast } from 'vant'
@@ -19,6 +19,7 @@ export function usePayment() {
   const { sendWalletTransaction } = useSendTransaction()
 
   async function pay(payType, params) {
+    console.log(params)
     await _checkConnection()
     const payMethod = _getPayMethod(payType)
     await payMethod(params)

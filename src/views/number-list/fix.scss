@@ -1,0 +1,45 @@
+/* 设置第一个 item 的上圆角 */
+.van-collapse-item:first-child .van-collapse-item__title {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+/* 设置最后一个 item 的下圆角（收起状态） */
+.van-collapse-item:last-child .van-collapse-item__title {
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+  border-bottom: none;
+
+}
+
+/* 设置最后一个 item 展开时的下圆角 */
+.van-collapse-item:last-child.van-collapse-item--expanded .van-collapse-item__wrapper {
+  border-bottom-left-radius: 8px !important;
+  border-bottom-right-radius: 8px !important;
+}
+
+.van-collapse-item:last-child {
+  border-bottom: none;
+}
+
+.van-collapse-item:first-child {
+  .van-cell {
+    border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  }
+}
+
+:deep(.van-collapse-item__title) {
+  border-bottom: 1px solid #E3EBF1 !important;
+}
+
+:deep(.van-collapse-item__title .van-cell__right-icon) {
+  // color: var(--base-white-color); /* 收起状态颜色 */
+  // transition:
+  //   transform 0.3s,
+  //   color 0.3s; /* 保留旋转动画，添加颜色过渡 */
+}
+
+:deep(.van-collapse-item__title--expanded .van-cell__right-icon) {
+  // color: var(--primary-color) !important;
+}

@@ -1,10 +1,3 @@
-/*
- * @Author: Xujianchen
- * @Date: 2025-06-03 15:08:25
- * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-02 21:30:50
- * @Description:
- */
 import '@/assets/styles/index.css'
 
 import { createApp } from 'vue'
@@ -28,7 +21,6 @@ import 'vant/es/dialog/style'
 import 'vant/es/image-preview/style'
 
 import.meta.env.MODE === 'development' && new VConsole()
-
 setupApp()
 
 async function setupApp() {

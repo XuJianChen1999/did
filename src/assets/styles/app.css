@@ -12,11 +12,7 @@ body,
 }
 
 .van-nav-bar .van-icon {
-  color: var(--base-white-color) !important;
-}
-
-.van-nav-bar__title {
-  color: var(--base-white-color) !important;
+  color: #22252D !important;
 }
 
 .van-popup {
