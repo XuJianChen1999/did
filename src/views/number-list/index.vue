@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-07-01 15:52:24
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-04 13:04:22
+ * @LastEditTime: 2025-07-04 14:39:28
  * @Description: 靓号列表
 -->
 <template>
@@ -44,7 +44,7 @@
                 </template>
                 <div class="no-number flex">
                   <span>暂未绑定钱包</span>
-                  <div>去绑定</div>
+                  <div @click="showModal = true">去绑定</div>
                 </div>
               </van-collapse-item>
             </van-collapse>
@@ -57,6 +57,7 @@
       </div>
     </van-pull-refresh>
     <connection-wallet-modal v-model="isShowConnectionWallet" @click="payNumber" />
+    <bind-number-modal v-model="showModal" />
   </div>
 </template>
 
@@ -67,12 +68,14 @@ import { useWallet } from '@/hooks/wallet/useWallet'
 import { useWalletPayment } from '@/hooks/wallet/useWalletPayment'
 import showLoading from '@/app/loading'
 import ConnectionWalletModal from '@/components/wallet-connection-modal'
+import BindNumberModal from './components/bind-number-modal'
 
 const { publicKey } = useWallet()
 const { sendPayment } = useWalletPayment()
 
 const refreshing = ref(false)
 const isShowConnectionWallet = ref(false)
+const showModal = ref(false)
 const currentItem = ref({})
 const numberList = ref([])
 const activeNames = ref('1')

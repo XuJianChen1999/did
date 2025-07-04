@@ -9,7 +9,7 @@ import vue from '@vitejs/plugin-vue'
 import postcssPxToViewport from 'postcss-px-to-viewport'
 import commonjs from 'vite-plugin-commonjs'
 
-const folderName = 'nft'
+const folderName = 'did'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {

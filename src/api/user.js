@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-24 09:51:40
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-04 12:07:52
+ * @LastEditTime: 2025-07-04 15:20:40
  * @Description: 用户相关接口
  */
 import http from '@/utils/http'
@@ -40,6 +40,7 @@ export function checkVipStatus(address) {
 
 // 会员钱包登录
 export function loginByAddress(address) {
+  console.log('会员钱包登录：', address)
   return http({
     method: 'post',
     url: '/api/user/loginByAddress',

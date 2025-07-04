@@ -3,8 +3,16 @@
     <!--  -->
     <div class="apply-did" v-if="isApply">
       <div class="apply-did-header">
-        <div class="apply-did-header-title">抽取DID靓号</div>
-        <div class="apply-did-header-desc">靓号为6-9位的数字组合，每个用户可抽取多个随机靓号</div>
+        <div
+          :style="{ color: ConnectionMap[connectedStatus].color }"
+          class="apply-did-header-title flex"
+        >
+          <point :type="ConnectionMap[connectedStatus].type" style="margin-right: 12px" />
+          {{ ConnectionMap[connectedStatus].text }}
+        </div>
+        <div v-if="address" class="apply-did-header-desc">
+          {{ processAddress(address) }}
+        </div>
       </div>
       <img src="@/assets/images/Onboarding_01_1@2x.png" alt="" />
       <div class="footer-btn">
@@ -55,6 +63,7 @@
     <wallet-connection-modal
       v-model="isShowSelectWallet"
       @select="handleConnected"
+      @select-coin-nexus="(data) => handleConnectedCoin(data)"
       @success="showToast('连接成功')"
     />
   </div>
@@ -65,14 +74,16 @@ import { showToast, showLoadingToast } from 'vant'
 import { useWallet } from '@/hooks/wallet/useWallet'
 import { usePayment } from '@/hooks/usePayment'
 import { loginByAddress } from '@/api/user'
+import { drawBlindBox } from '@/api/blind-box'
 import { PaymentMap } from '@/const/payment'
-import { STORAGE_WALLET_TOKEN } from '@/const'
+import { STORAGE_WALLET_TOKEN, STORAGE_WALLET_NAME, STORAGE_WALLET_ADDRESS } from '@/const'
 import { getQueryParams } from '@/utils/url'
-import { setStorage } from '@/utils/storage'
+import { setStorage, getStorage } from '@/utils/storage'
 import confetti from 'canvas-confetti'
 import copyToClipboard from '@/utils/clipboard'
 import showLoading from '@/app/loading'
 import WalletConnectionModal from '@/components/wallet-connection-modal'
+import Point from '@/components/point'
 import CopySvg from '@/assets/svg/apply-did-copy'
 
 const { pay } = usePayment()
@@ -80,27 +91,59 @@ const { publicKey } = useWallet()
 
 const isShowSelectWallet = ref(false)
 const isApply = ref(true)
+const connectedStatus = ref('unconnected')
 const confettiBg = ref('')
+const address = ref('')
 const drawData = ref({})
+const ConnectionMap = {
+  unconnected: {
+    text: '未连接',
+    color: '#909399',
+    type: 'info',
+  },
+  connecting: {
+    text: '连接中',
+    color: '#3751FF',
+    type: 'primary',
+  },
+  connected: {
+    text: '已连接',
+    color: '#67c23a',
+    type: 'success',
+  },
+  fail: {
+    text: '连接失败',
+    color: '#f56c6c',
+    type: 'danger',
+  },
+}
 
 onMounted(async () => {
   const params = getQueryParams()
-  console.log('getQueryParams---', params)
-  if (!publicKey.value) {
-    showToast('钱包未连接')
+  const walletName = getStorage(STORAGE_WALLET_NAME)
+  const walletAddr = getStorage(STORAGE_WALLET_ADDRESS)
+  if (walletName === 'CoinNexus' && walletAddr) {
+    address.value = walletAddr
+    connectedStatus.value = 'connected'
+  } else {
+    connectedStatus.value = publicKey.value ? 'connected' : 'unconnected'
   }
-  if (params?.address) {
-    const ins = showLoading('钱包登录中')
-    try {
-      const res = await loginByAddress(params.address)
-      console.log('loginByAddress---', res)
-      setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
-      ins.close()
-    } catch (error) {
-      ins.close()
-      console.log('error---', error)
-    }
-  }
+  // if (!publicKey.value || !walletAddr) {
+  //   showToast('钱包未连接')
+  // }
+  // if (params?.address) {
+  //   address.value = params.address
+  //   const ins = showLoading('钱包登录中')
+  //   try {
+  //     const res = await loginByAddress(params.address)
+  //     console.log('loginByAddress---', res)
+  //     setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
+  //     ins.close()
+  //   } catch (error) {
+  //     ins.close()
+  //     console.log('error---', error)
+  //   }
+  // }
 })
 
 watch(isApply, async (newVal) => {
@@ -137,24 +180,91 @@ watch(isApply, async (newVal) => {
   }
 })
 
+function processAddress(address) {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`
+}
+
+// 处理coinexus钱包连接
+async function handleConnectedCoin(data) {
+  console.log('拿到emit数据', data.publicKey)
+  connectedStatus.value = 'connecting'
+  address.value = data.publicKey
+  setStorage(STORAGE_WALLET_ADDRESS, data.publicKey)
+  connectedStatus.value = 'connected'
+
+  await handleCoinDraw(data.publicKey)
+
+  // window?.?.postMessage('sendTrx', resp.data.trx)
+  // const lodIns = await showLoading('正在抽取...')
+  // try {
+  //   const res = await pay(PaymentMap.DRAW_NUMBER)
+  //   await lodIns.close()
+  //   showToast(`恭喜您获取DID靓号：${res.data.number}`)
+  //   isApply.value = true
+  // } catch (error) {
+  //   console.error(error)
+  //   lodIns.close()
+  // }
+}
+
+// 处理其他钱包连接
 async function handleConnected() {
   console.log(publicKey.value)
   await drawBox()
 }
 
+// 抽号
 async function handleDraw() {
-  if (!publicKey.value) {
-    isShowSelectWallet.value = true
-    return
+  const walletName = getStorage(STORAGE_WALLET_NAME)
+
+  if (walletName === 'Coinexus') {
+    if (!address.value) {
+      isShowSelectWallet.value = true
+      return
+    }
+    console.log('address--', address.value)
+    await handleCoinDraw(address.value)
+  } else {
+    if (!publicKey.value) {
+      isShowSelectWallet.value = true
+      return
+    }
+
+    // 其他钱包
+    showLoadingToast('正在处理')
+    await drawBox(publicKey.value)
   }
-  showLoadingToast('正在处理')
-  await drawBox(publicKey.value)
+}
+
+async function handleCoinDraw(value) {
+  const ins = showLoading('正在抽取')
+  try {
+    const resp = await drawBlindBox(value)
+    const walletName = getStorage(STORAGE_WALLET_NAME)
+    await ins.close()
+
+    console.log('drawBlindBox---', resp.data.trx)
+    window?.[walletName]?.postMessage(
+      JSON.stringify({
+        type: 'sendTransaction',
+        data: resp.data.trx,
+      }),
+    )
+
+    window.receiveMessage = function (data) {
+      showToast('接收到了signature')
+      console.log('接收到了signature', data)
+    }
+  } catch (error) {
+    console.log('error---', error)
+    await ins.close()
+  }
 }
 
 async function drawBox() {
   console.log('publicKey.value.toBase58()', publicKey.value.toBase58())
   const res = await loginByAddress(publicKey.value.toBase58())
-  console.log(res)
+  address.value = publicKey.value?.toBase58()
   setStorage(STORAGE_WALLET_TOKEN, res.data.userinfo.token)
 
   const lodIns = await showLoading('正在抽取...')
@@ -198,7 +308,7 @@ async function drawBox() {
     text-align: center;
     .apply-did-header-title {
       font-weight: 700;
-      font-size: 30px;
+      font-size: 22px;
       color: #22252d;
       margin-bottom: var(--base-space);
     }

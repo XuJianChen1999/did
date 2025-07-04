@@ -2,7 +2,7 @@
  * @Author: Xujianchen
  * @Date: 2025-06-09 15:46:55
  * @LastEditors: Xujianchen
- * @LastEditTime: 2025-07-04 11:49:41
+ * @LastEditTime: 2025-07-04 15:19:59
  * @Description: 钱包连接弹窗
 -->
 <template>
@@ -11,7 +11,7 @@
       <div class="wallet-connection-title flex">
         <span></span>
         <span>连接钱包</span>
-        <van-icon name="cross" />
+        <van-icon name="cross" @click="close" />
       </div>
       <div class="wallet-connection-list">
         <div
@@ -30,7 +30,8 @@
 
 <script setup>
 import { WalletReadyState } from '@solana/wallet-adapter-base'
-import { showToast } from 'vant'
+import { STORAGE_WALLET_NAME } from '@/const'
+import { setStorage } from '@/utils/storage'
 import { useWallet } from '@/hooks/wallet/useWallet'
 import walletLogo from '@/assets/images/wallet-logo.jpg'
 import popup from '@/components/popup'
@@ -70,7 +71,7 @@ const renderWalletList = computed(() => {
     ...tmp,
     {
       adapter: {
-        name: 'Coin Nexus',
+        name: 'Coinexus',
         icon: walletLogo,
       },
     },
@@ -79,14 +80,16 @@ const renderWalletList = computed(() => {
 
 async function select(item) {
   console.log(item.adapter.name)
-  if (item.adapter.name === 'Coin Nexus') {
-    window?.FlutterChannel?.postMessage('connect')
-    window.receiveConnectMessage = function (message) {
-      showToast('接受到了来自Coin Nexus的信息')
-      console.log('接受到了来自Coin Nexus的信息--', message)
-      emits('select-coin-nexus', message)
+  if (item.adapter.name === 'Coinexus') {
+    setStorage(STORAGE_WALLET_NAME, item.adapter.name)
+    const channelName = item.adapter.name
+    window?.[channelName]?.postMessage('connect')
+    window.receiveMessage = function (data) {
+      console.log('接受到了来自Coin Nexus的信息--', data)
+      emits('select-coin-nexus', { ...item, publicKey: data.data.publicKey })
+      close()
     }
-
+    emits('select-coin-nexus', { ...item, publicKey: '1111' })
     close()
   } else {
     await selectWallet(item.adapter.name)
